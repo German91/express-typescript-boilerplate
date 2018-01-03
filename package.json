@@ -1,0 +1,44 @@
+{
+  "name": "express-typescript-boilerplate",
+  "version": "1.0.0",
+  "description": "Express application using typescript",
+  "main": "index.js",
+  "author": "German Hernandez",
+  "license": "MIT",
+  "scripts": {
+    "ts:watch": "tsc -w",
+    "dev": "nodemon ./build/index.js",
+    "start": "node ./build/index.js"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.8",
+    "@types/cookie-parser": "^1.4.1",
+    "@types/es6-promise": "^3.3.0",
+    "@types/express": "^4.11.0",
+    "@types/jsonwebtoken": "^7.2.5",
+    "@types/method-override": "^0.0.31",
+    "@types/mongoose": "^4.7.32",
+    "@types/node": "^8.5.2",
+    "@types/validator": "^6.3.0",
+    "ts-loader": "^3.2.0",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "bcrypt-nodejs": "^0.0.3",
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.1",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "helmet": "^3.9.0",
+    "jsonwebtoken": "^8.1.0",
+    "lodash": "^4.17.4",
+    "method-override": "^2.3.10",
+    "mongoose": "^5.0.0-rc1",
+    "mongoose-timestamps": "^0.0.1",
+    "morgan": "^1.9.0",
+    "validator": "^9.2.0"
+  }
+}
