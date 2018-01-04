@@ -6,7 +6,7 @@ class Email {
     public transporter: nodemailer.Transporter;
     public email: emailTemplates;
 
-    private host: string = process.env.EMAIL_PORT;
+    private host: string = process.env.EMAIL_HOST;
     private port: number = parseInt(process.env.EMAIL_PORT);
     private user: string = process.env.EMAIL_USER;
     private pass: string = process.env.EMAIL_PASS;
@@ -26,13 +26,14 @@ class Email {
         });
     }
 
-    public async sendEmail(to: string, data: object, template: string) {
-        try {
-            const sent = await this.email.send({ template, message: { to }, locals: data });
-            return sent;
-        } catch (err) {
-            return err;
-        }
+    public sendEmail(to: string, data: object, template: string) {
+        const self = this;
+
+        return new Promise(function (resolve, reject) {
+            return self.email.send({ template, message: { to }, locals: data })
+                .then(() => resolve())
+                .catch((e) => reject(new Error(e)));
+        });
     }
 }
 

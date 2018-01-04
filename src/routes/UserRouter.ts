@@ -130,6 +130,7 @@ class UserRouter {
 
             await Email.sendEmail(email, { url }, 'forgotPassword');
         } catch (err) {
+            console.error(err);
             res.status(400).send({ code: 400, status: 'error', message: err });
         }
     }
@@ -171,6 +172,27 @@ class UserRouter {
         }
     }
 
+    /**
+     * @api {get} /v1/auth/profile              User's profile
+     * @apiName Profile
+     * @apiVersion 1.0.0
+     * @apiGroup Authentication
+     *
+     *
+     * @apiSuccess (Success 2xx) 200/OK         Success
+     * @apiSuccessExample Success-Response:
+     *   HTTP 200 OK
+     *   {
+     *     code: 200,
+     *     status: 'success',
+     *     user: Object(email, password, username, roles, created_at, updated_at)
+     *   }
+     * @apiError 401/Unauthorized
+     */
+    public async profile (req: Request, res: Response) {
+        res.status(200).send({ code: 200, status: 'success', user: req['user'] });
+    }
+
     public routes(): void {
         this.router.post('/signup', [
             check('username').exists().trim(),
@@ -191,6 +213,8 @@ class UserRouter {
         this.router.post('/reset-password', [
             check('password').exists()
         ], limiter, Authorization.isLogged, this.resetPassword);
+
+        this.router.get('/profile', Authorization.isLogged, this.profile);
     }
 }
 

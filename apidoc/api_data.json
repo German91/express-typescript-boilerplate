@@ -132,6 +132,52 @@
     ]
   },
   {
+    "type": "get",
+    "url": "/v1/auth/profile",
+    "title": "User's profile",
+    "name": "Profile",
+    "version": "1.0.0",
+    "group": "Authentication",
+    "success": {
+      "fields": {
+        "Success 2xx": [
+          {
+            "group": "Success 2xx",
+            "optional": false,
+            "field": "200/OK",
+            "description": "<p>Success</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP 200 OK\n{\n  code: 200,\n  status: 'success',\n  user: Object(email, password, username, roles, created_at, updated_at)\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "401/Unauthorized",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "build/routes/UserRouter.js",
+    "groupTitle": "Authentication",
+    "sampleRequest": [
+      {
+        "url": "http://localhost:3000/api/v1/auth/profile"
+      }
+    ]
+  },
+  {
     "type": "post",
     "url": "/v1/auth/reset-password",
     "title": "Reset Password",
