@@ -4,7 +4,6 @@ import { matchedData, sanitize } from 'express-validator/filter';
 
 import User from './../models/User';
 import Token from './../utils/tokens';
-
 import { IUser } from '../interfaces/IUser';
 
 class UserRouter {
@@ -48,7 +47,7 @@ class UserRouter {
             await user.save();
             
             // Generate auth token
-            const token: string = Token.encodeToken({ _id: user._id });
+            const token: string = Token.encodeToken({ _id: user._id, roles: user.roles });
 
             res.status(200).send({ code: 200, status: 'success', message: 'Account successfully created', token, user });
         } catch (err) {
@@ -87,7 +86,7 @@ class UserRouter {
             const { username, email, password } = req.body;
 
             const user: IUser = await User.findByCredentials(password, email, username);
-            const token: string = Token.encodeToken({ _id: user._id });
+            const token: string = Token.encodeToken({ _id: user._id, roles: user.roles });
 
             res.status(200).send({ code: 200, status: 'success', token, user });
         } catch (err) {

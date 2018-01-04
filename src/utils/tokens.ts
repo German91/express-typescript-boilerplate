@@ -1,4 +1,5 @@
 import { sign, verify } from 'jsonwebtoken';
+import { IPayload } from '../interfaces/IPayload';
 
 class Token {
     public static encodeToken(payload: object): string {
@@ -7,7 +8,7 @@ class Token {
         return token;
     }
 
-    public static decodeToken(token: string): string | object {
+    public static decodeToken(token: string): any {
         const decoded = verify(token, process.env.SECRET_KEY);
 
         return decoded;
