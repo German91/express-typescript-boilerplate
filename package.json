@@ -9,7 +9,9 @@
     "doc": "apidoc -i build/routes/ -o apidoc/",
     "ts:watch": "tsc -w",
     "dev": "nodemon ./build/index.js",
-    "start": "node ./build/index.js"
+    "start": "node ./build/index.js",
+    "build": "tsc",
+    "postinstall": "npm run build"
   },
   "devDependencies": {
     "@types/bcrypt": "^1.0.0",
