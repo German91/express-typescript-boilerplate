@@ -10,7 +10,7 @@
     "ts:watch": "tsc -w",
     "dev": "nodemon ./build/index.js",
     "start": "node ./build/index.js",
-    "postinstall": "tsc"
+    "postinstall": "./node_modules/typescript/bin/tsc"
   },
   "devDependencies": {
     "@types/bcrypt": "^1.0.0",
