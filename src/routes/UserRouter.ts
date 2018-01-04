@@ -4,7 +4,10 @@ import { matchedData, sanitize } from 'express-validator/filter';
 
 import User from './../models/User';
 import Token from './../utils/tokens';
-import { IUser } from '../interfaces/IUser';
+import { IUser } from './../interfaces/IUser';
+import limiter from './../middlewares/limiter';
+import Email from './../utils/emails';
+import Authorization from './../middlewares/authorization';
 
 class UserRouter {
     public router: Router;
@@ -36,7 +39,7 @@ class UserRouter {
      *   }
      * @apiError 400/Bad-Request               Invalid params
      */
-    public async SignUp (req: Request, res: Response) {
+    public async signUp (req: Request, res: Response) {
        const errors = validationResult(req);
 
         if (!errors.isEmpty())
@@ -76,7 +79,7 @@ class UserRouter {
      *   }
      * @apiError 400/Bad-Request               Invalid params
      */
-    public async Login (req: Request, res: Response) {
+    public async login (req: Request, res: Response) {
         const errors = validationResult(req);
 
         if (!errors.isEmpty())
@@ -94,18 +97,100 @@ class UserRouter {
         }
     }
 
+    /**
+     * @api {post} /v1/auth/forgot-password      Forgot Password
+     * @apiName ForgotPassword
+     * @apiVersion 1.0.0
+     * @apiGroup Authentication
+     *
+     * @apiParam {String} email                 User's email
+     *
+     * @apiSuccess (Success 2xx) 200/OK         Success
+     * @apiSuccessExample Success-Response:
+     *   HTTP 200 OK
+     *   {
+     *     code: 200,
+     *     status: 'success',
+     *     message: 'Check your email in order to reset your password'
+     *   }
+     * @apiError 400/Bad-Request
+     */
+    public async forgotPassword (req: Request, res: Response) {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty())
+            return res.status(400).send({ errors: errors.mapped() });
+
+        try {
+            const { email } = req.body;
+
+            const user: IUser = await User.findOne({ email });
+            const token: string = Token.forgotPasswordToken(user._id);
+            const url: string = `${process.env.PASSWORD_URL}/reset-password/${token}`;
+
+            await Email.sendEmail(email, { url }, 'forgotPassword');
+        } catch (err) {
+            res.status(400).send({ code: 400, status: 'error', message: err });
+        }
+    }
+
+    /**
+     * @api {post} /v1/auth/reset-password      Reset Password
+     * @apiName ResetPassword
+     * @apiVersion 1.0.0
+     * @apiGroup Authentication
+     *
+     * @apiHeader {String} x-token              Reset password token.
+     *
+     * @apiParam {String} password              New user's password
+     *
+     * @apiSuccess (Success 2xx) 200/OK         Success
+     * @apiSuccessExample Success-Response:
+     *   HTTP 200 OK
+     *   {
+     *     code: 200,
+     *     status: 'success',
+     *     message: 'Password successfully updated'
+     *   }
+     * @apiError 400/Bad-Request
+     */
+    public async resetPassword (req: Request, res: Response) {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty())
+            return res.status(400).send({ errors: errors.mapped() });
+
+        try {
+            const { password } = req.body;
+
+            await User.findByIdAndUpdate(req['user']._id, { $set: { password } });
+
+            res.status(200).send({ code: 200, status: 'success', message: 'Password successfully updated' });
+        } catch (err) {
+            res.status(400).send({ code: 400, status: 'error', message: err });
+        }
+    }
+
     public routes(): void {
         this.router.post('/signup', [
             check('username').exists().trim(),
             check('email').exists().isEmail().trim().normalizeEmail(),
             check('password').exists()
-        ], this.SignUp);
+        ], limiter, this.signUp);
 
         this.router.post('/login', [
             check('username').trim().optional(),
             check('email').isEmail().trim().normalizeEmail().optional(),
             check('password').exists()
-        ], this.Login);
+        ], limiter, this.login);
+
+        this.router.post('/forgot-password', [
+            check('email').isEmail().trim().normalizeEmail().exists()
+        ], limiter, this.forgotPassword);
+
+        this.router.post('/reset-password', [
+            check('password').exists()
+        ], limiter, Authorization.isLogged, this.resetPassword);
     }
 }
 

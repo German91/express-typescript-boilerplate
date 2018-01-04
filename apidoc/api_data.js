@@ -1,6 +1,65 @@
 define({ "api": [
   {
     "type": "post",
+    "url": "/v1/auth/forgot-password",
+    "title": "Forgot Password",
+    "name": "ForgotPassword",
+    "version": "1.0.0",
+    "group": "Authentication",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>User's email</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 2xx": [
+          {
+            "group": "Success 2xx",
+            "optional": false,
+            "field": "200/OK",
+            "description": "<p>Success</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP 200 OK\n{\n  code: 200,\n  status: 'success',\n  message: 'Check your email in order to reset your password'\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400/Bad-Request",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "build/routes/UserRouter.js",
+    "groupTitle": "Authentication",
+    "sampleRequest": [
+      {
+        "url": "http://localhost:3000/api/v1/auth/forgot-password"
+      }
+    ]
+  },
+  {
+    "type": "post",
     "url": "/v1/auth/login",
     "title": "Login",
     "name": "Login",
@@ -69,6 +128,78 @@ define({ "api": [
     "sampleRequest": [
       {
         "url": "http://localhost:3000/api/v1/auth/login"
+      }
+    ]
+  },
+  {
+    "type": "post",
+    "url": "/v1/auth/reset-password",
+    "title": "Reset Password",
+    "name": "ResetPassword",
+    "version": "1.0.0",
+    "group": "Authentication",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-token",
+            "description": "<p>Reset password token.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>New user's password</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 2xx": [
+          {
+            "group": "Success 2xx",
+            "optional": false,
+            "field": "200/OK",
+            "description": "<p>Success</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP 200 OK\n{\n  code: 200,\n  status: 'success',\n  message: 'Password successfully updated'\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "400/Bad-Request",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "build/routes/UserRouter.js",
+    "groupTitle": "Authentication",
+    "sampleRequest": [
+      {
+        "url": "http://localhost:3000/api/v1/auth/reset-password"
       }
     ]
   },

@@ -13,6 +13,12 @@ class Token {
 
         return decoded;
     }
+
+    public static forgotPasswordToken(_id: string): string {
+        const token: string = sign({ _id }, process.env.SECRET_KEY, { expiresIn: '10m' });
+
+        return token;
+    }
 }
 
 export default Token;

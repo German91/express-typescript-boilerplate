@@ -22,16 +22,16 @@ class Authorization {
         }
     }
 
-    // public static async isAdmin(req: Request, res: Response, next: NextFunction) {
-    //     const roles: string[] = req['user'].roles;
+    public static async isAdmin(req: Request, res: Response, next: NextFunction) {
+        const roles: string[] = req['user'].roles;
 
-    //     const hasRole: boolean = _.includes(roles, 'admin');
+        const hasRole: boolean = _.includes(roles, 'admin');
 
-    //     if (!hasRole)
-    //         return res.status(401).send({ code: 401, status: 'error', message: 'Unauthorized' });
+        if (!hasRole)
+            return res.status(401).send({ code: 401, status: 'error', message: 'Unauthorized' });
 
-    //     next();
-    // }
+        next();
+    }
 }
 
 export default Authorization;
