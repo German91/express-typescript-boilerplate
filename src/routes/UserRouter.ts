@@ -15,6 +15,28 @@ class UserRouter {
         this.routes();
     }
 
+    /**
+     * @api {post} /v1/auth/signup              Create a new user
+     * @apiName Signup
+     * @apiVersion 1.0.0
+     * @apiGroup Authentication
+     *
+     * @apiParam {String} email                 User's email
+     * @apiParam {String} password              User's password
+     * @apiParam {String} username              User's username
+     *
+     * @apiSuccess (Success 2xx) 201/Created
+     * @apiSuccessExample Success-Response:
+     *   HTTP 201 CREATED
+     *   {
+     *     code: 201,
+     *     status: 'success',
+     *     message: 'Account successfully created',
+     *     user: Object(_id, email, password, username, roles, created_at, updated_at),
+     *     token: Auth token
+     *   }
+     * @apiError 400/Bad-Request               Invalid params
+     */
     public async SignUp (req: Request, res: Response) {
        const errors = validationResult(req);
 
@@ -28,12 +50,33 @@ class UserRouter {
             // Generate auth token
             const token: string = Token.encodeToken({ _id: user._id });
 
-            res.status(200).send({ code: 200, status: 'success', token, user });
+            res.status(200).send({ code: 200, status: 'success', message: 'Account successfully created', token, user });
         } catch (err) {
             res.status(400).send({ code: 400, status: 'error', message: err });
         }
     }
 
+    /**
+     * @api {post} /v1/auth/login               Login
+     * @apiName Login
+     * @apiVersion 1.0.0
+     * @apiGroup Authentication
+     *
+     * @apiParam {String} email                 User's email (optional)
+     * @apiParam {String} username              User's username (optional)
+     * @apiParam {String} password              User's password
+     *
+     * @apiSuccess (Success 2xx) 200/OK
+     * @apiSuccessExample Success-Response:
+     *   HTTP 200 OK
+     *   {
+     *     code: 200,
+     *     status: 'success',
+     *     user: Object(_id, email, password, username, roles, created_at, updated_at),
+     *     token: Auth token
+     *   }
+     * @apiError 400/Bad-Request               Invalid params
+     */
     public async Login (req: Request, res: Response) {
         const errors = validationResult(req);
 

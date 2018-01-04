@@ -6,6 +6,7 @@
   "author": "German Hernandez",
   "license": "MIT",
   "scripts": {
+    "doc": "apidoc -i build/routes/ -o apidoc/",
     "ts:watch": "tsc -w",
     "dev": "nodemon ./build/index.js",
     "start": "node ./build/index.js"
@@ -23,6 +24,8 @@
     "@types/mongoose": "^4.7.32",
     "@types/node": "^8.5.2",
     "@types/validator": "^6.3.0",
+    "apidoc": "^0.17.6",
+    "nodemon": "^1.14.7",
     "ts-loader": "^3.2.0",
     "typescript": "^2.6.2"
   },

@@ -39,7 +39,7 @@ class Server {
     public routes(): void {
         const router: express.Router = express.Router();
 
-        this.app.use('/', router);
+        this.app.use('/', express.static(__dirname + '/../apidoc'));
         this.app.use('/api/v1/auth', UserRoutes);
     }
 
