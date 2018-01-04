@@ -1,9 +1,15 @@
-export interface IUser {
-    _id?: string;
+import { Document, Model } from 'mongoose';
+
+export interface IUser extends Document {
     email: string;
+    password: string;
     username: string;
-    password?: string;
-    roles: Array<string>;
-    created_at?: string;
-    updated_at?: string;
+    roles: string[];
+
+    toJSON(): IUser;
+}
+
+export interface IUserModel extends Model<IUser> {
+    // Static methods
+    findByCredentials(password: string, email?: string, username?: string): IUser;
 }

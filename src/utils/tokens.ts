@@ -1,22 +1,16 @@
 import { sign, verify } from 'jsonwebtoken';
 
 class Token {
-    public static async encodeToken(payload: any, cb: Function): any {
-        try {
-            const token = await sign(payload, process.env.SECRET_KEY, { expiresIn: process.env.TOKEN_EXP });
-            return token;
-        } catch (err) {
-            return err;
-        }
+    public static encodeToken(payload: object): string {
+        const token: string = sign(payload, process.env.SECRET_KEY, { expiresIn: process.env.TOKEN_EXP });
+
+        return token;
     }
 
-    public static async decodeToken(token: string, cb: Function): string {
-        try {
-            const decoded = await verify(token, process.env.SECRET_KEY);
-            return decoded;
-        } catch (err) {
-            return err;
-        }
+    public static decodeToken(token: string): string | object {
+        const decoded = verify(token, process.env.SECRET_KEY);
+
+        return decoded;
     }
 }
 

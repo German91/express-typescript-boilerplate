@@ -27,8 +27,7 @@ class Server {
     }
 
     public config(): void {
-        this.app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
-        this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+        this.app.use(express.json());
         this.app.use(cookieParser());
         this.app.use(methodOverride());
         this.app.use(compression());

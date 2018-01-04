@@ -5,7 +5,7 @@ import * as timestamps from 'mongoose-timestamps';
 import * as bcrypt from 'bcrypt';
 import * as _ from 'lodash';
 
-import IUser from './../interfaces/IUser';
+import { IUser, IUserModel } from '../interfaces/IUser';
 
 const UserSchema: Schema = new Schema({
     email: {
@@ -50,39 +50,41 @@ UserSchema.methods.toJSON = function () {
     return user;
 }
 
-UserSchema.statics.findByCredentials = function (email: string, password: string) {
+UserSchema.statics.findByCredentials = async function (password: string, email?: string, username?: string) {
   const User = this;
 
-  return User.findOne({ email }).then((user) => {
+  try {
+    const user: IUser = await User.findOne({ $or: [{ email, username }] });
+    
     if (!user)
         return Promise.reject('User not found');
 
-    return new Promise(function(resolve, reject) {
-      bcrypt.compare(password, user.password, (err, res) => {
-        if (res)
-          resolve(user);
-        else
-          reject(err);
-      });
-    });
-  });
+    const isMatch: boolean = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+        return Promise.reject('Email/Username or password is incorrect');
+    
+    return user;
+  } catch (err) {
+    return err;
+  }
 };
 
 UserSchema.pre('save', function (next: NextFunction) {
-    const user: IUser = this;
+    const user = this;
 
     if (!user.isModified('password')) next();
 
-    bcrypt.genSalt(10, (err, salt) => {
-        if (err) return next(err);
+    bcrypt.genSalt(10)
+        .then((salt) => {
+            return bcrypt.hash(user.password, salt).then((hash) => {
+                user.password = hash;
 
-        bcrypt.hash(user.password, salt, (err, hash) => {
-            if (err) return next(err);
-
-            user.password = hash;
-            next();
+                next();
+            });
+        })
+        .catch((err) => {
+            return next(err);
         });
-    });
 });
 
-export default model('User', UserSchema);
+export default model<IUser, IUserModel>('User', UserSchema);

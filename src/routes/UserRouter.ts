@@ -1,8 +1,11 @@
 import { Router, Request, Response } from 'express';
+import { check, validationResult } from 'express-validator/check';
+import { matchedData, sanitize } from 'express-validator/filter';
 
 import User from './../models/User';
-import IUser from './../interfaces/IUser';
 import Token from './../utils/tokens';
+
+import { IUser } from '../interfaces/IUser';
 
 class UserRouter {
     public router: Router;
@@ -13,29 +16,36 @@ class UserRouter {
     }
 
     public async SignUp (req: Request, res: Response) {
-        const user: IUser = new User(req.body);
+       const errors = validationResult(req);
+
+        if (!errors.isEmpty())
+            return res.status(400).send({ errors: errors.mapped() });
 
         try {
-            await User.remove({}); // Testing purposes
+            const user = new User(req.body);
             await user.save();
-            const token: string = await Token.encodeToken({ _id: user._id });
+            
+            // Generate auth token
+            const token: string = Token.encodeToken({ _id: user._id });
 
-            res.status(201).send({ code: 201, status: 'success', message: 'User successfully created', token, user });
+            res.status(200).send({ code: 200, status: 'success', token, user });
         } catch (err) {
-            console.error(err);
             res.status(400).send({ code: 400, status: 'error', message: err });
         }
     }
 
     public async Login (req: Request, res: Response) {
-        const email: string = req.body.email;
-        const password: string = req.body.password;
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty())
+            return res.status(400).send({ errors: errors.mapped() });
 
         try {
-            const user: IUser = await User.findByCredentials(email, password);
-            if (!user) Promise.reject('User not found');
+            const { username, email, password } = req.body;
 
-            const token: string = await Token.encodeToken({ _id: user._id });
+            const user: IUser = await User.findByCredentials(password, email, username);
+            const token: string = Token.encodeToken({ _id: user._id });
+
             res.status(200).send({ code: 200, status: 'success', token, user });
         } catch (err) {
             res.status(400).send({ code: 400, status: 'error', message: err });
@@ -43,8 +53,17 @@ class UserRouter {
     }
 
     public routes(): void {
-        this.router.post('/signup', this.SignUp);
-        this.router.post('/login', this.Login);
+        this.router.post('/signup', [
+            check('username').exists().trim(),
+            check('email').exists().isEmail().trim().normalizeEmail(),
+            check('password').exists()
+        ], this.SignUp);
+
+        this.router.post('/login', [
+            check('username').trim().optional(),
+            check('email').isEmail().trim().normalizeEmail().optional(),
+            check('password').exists()
+        ], this.Login);
     }
 }
 
